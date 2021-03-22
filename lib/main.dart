@@ -96,13 +96,16 @@ class MyHomePage extends StatelessWidget {
                 child: Column(
                   children: <Widget>[
                     Expanded(
-                      child: StreamBuilder<Object>(
+                      child: StreamBuilder<double>(
                           stream: stream,
                           builder: (context, snapshot) {
+                            final minVal = 50.0;
+                            final newCurVal = snapshot.data ?? minVal;
+
                             return GaugeWidget(
                               gaugeType: GaugeType.valueDriverGauge,
-                              minVal: 50.0,
-                              curVal: snapshot.data,
+                              minVal: minVal,
+                              curVal: newCurVal,
                               maxVal: 90.0,
 //            baselineVal: 75.6,
 //            limitVal: 80.0,
@@ -125,10 +128,13 @@ class MyHomePage extends StatelessWidget {
                       child: StreamBuilder<double>(
                           stream: stream,
                           builder: (context, snapshot) {
+                            final minVal = 50.0;
+                            final newCurVal = snapshot.data ?? minVal;
+
                             return GaugeWidget(
-                              minVal: 50.0,
+                              minVal: minVal,
                               maxVal: 90.0,
-                              curVal: snapshot.data,
+                              curVal: newCurVal,
 //            baselineVal: 75.6,
 //            limitVal: 80.0,
                               gaugeDecoration: gaugeDecoration,
@@ -145,9 +151,12 @@ class MyHomePage extends StatelessWidget {
               StreamBuilder<double>(
                   stream: stream,
                   builder: (context, snapshot) {
+                    final minVal = 50.0;
+                    final newCurVal = snapshot.data ?? minVal;
+
                     return GaugeWidget(
-                      curVal: snapshot.data,
-                      minVal: 50.0,
+                      curVal: newCurVal,
+                      minVal: minVal,
                       maxVal: 90.0,
 //            baselineVal: 75.6,
 //            limitVal: 80.0,
@@ -171,9 +180,12 @@ class MyHomePage extends StatelessWidget {
                   child: StreamBuilder<double>(
                       stream: stream,
                       builder: (context, snapshot) {
+                        final minVal = 50.0;
+                        final newCurVal = snapshot.data ?? minVal;
+
                         return GaugeWidget(
-                          curVal: snapshot.data,
-                          minVal: 50.0,
+                          curVal: newCurVal,
+                          minVal: minVal,
                           maxVal: 90.0,
 //            baselineVal: 75.6,
 //            limitVal: 80.0,

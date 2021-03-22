@@ -10,10 +10,10 @@ class RangePainter extends CustomPainter{
   final double rangeWidth;
 
   RangePainter({
-    @required this.ranges,
-    @required this.max,
-    @required this.min,
-    @required this.rangeWidth
+    required this.ranges,
+    required this.max,
+    required this.min,
+    required this.rangeWidth
   }) : assert (max != null),
         assert (min != null),
         assert (max >= min),

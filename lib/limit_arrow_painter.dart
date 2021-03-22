@@ -12,13 +12,13 @@ class LimitArrowPainter extends CustomPainter{
   final double arrowWidth;
 
   LimitArrowPainter({
-    @required this.limitVal,
-    @required this.maxVal,
-    @required this.minVal,
-    @required this.color,
-    @required this.paintingStyle,
-    @required this.arrowHeight,
-    @required this.arrowWidth
+    required this.limitVal,
+    required this.maxVal,
+    required this.minVal,
+    required this.color,
+    required this.paintingStyle,
+    required this.arrowHeight,
+    required this.arrowWidth
   }) : painter = Paint(),
       assert (limitVal != null),
       assert (maxVal != null),
@@ -37,9 +37,9 @@ class LimitArrowPainter extends CustomPainter{
   @override
   void paint(Canvas canvas, Size size) {
     double radius = size.width / 2;
-    double limitValChecked = limitVal;
-    if (limitVal > maxVal) limitValChecked = maxVal;
-    if (limitVal < minVal) limitValChecked = minVal;
+    double limitValChecked = limitVal.toDouble();
+    if (limitVal > maxVal) limitValChecked = maxVal.toDouble();
+    if (limitVal < minVal) limitValChecked = minVal.toDouble();
 
     double percent = (limitValChecked - minVal)/(maxVal - minVal);
     double angle = -pi/2 + pi * percent;

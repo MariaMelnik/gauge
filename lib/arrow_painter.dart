@@ -15,11 +15,11 @@ class ArrowPainter extends CustomPainter{
 
 
   ArrowPainter({
-    @required this.rotationPercent,
-    @required this.arrowColor,
-    @required this.arrowPaintingStyle,
-    @required this.arrowStartWidth,
-    @required this.arrowEndShift
+    required this.rotationPercent,
+    required this.arrowColor,
+    required this.arrowPaintingStyle,
+    required this.arrowStartWidth,
+    required this.arrowEndShift
   }): arrowPaint = Paint(),
         assert(arrowColor!=null),
         assert(arrowPaintingStyle!=null),

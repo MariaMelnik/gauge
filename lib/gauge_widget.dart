@@ -5,30 +5,31 @@ import 'package:gauge/gauge_decoration.dart';
 import 'package:gauge/limit_arrow_painter.dart';
 import 'package:gauge/range_painter.dart';
 import 'package:gauge/ticks_painter.dart';
+import 'package:collection/collection.dart';
 
 const double _defaultInitValue = 1.0;
 const Duration _changeRotationAnimationDuration = const Duration(milliseconds: 300);
 const Curve _animationCurve = Curves.easeOut;
 
 class GaugeWidget extends ImplicitlyAnimatedWidget {
-  final GaugeDecoration gaugeDecoration;
+  final GaugeType gaugeType;
   final num minVal;
   final num maxVal;
   final num curVal;
-  final num baselineVal;
-  final num initVal;
-  final num limitVal;
-  final GaugeType gaugeType;
+  final num? baselineVal;
+  final num? initVal;
+  final num? limitVal;
+  final GaugeDecoration gaugeDecoration;
 
   const GaugeWidget({
-    Key key,
-    @required this.minVal,
-    @required this.maxVal,
-    @required this.curVal,
+    Key? key,
+    required this.minVal,
+    required this.maxVal,
+    required this.curVal,
+    required this.gaugeDecoration,
     this.initVal,
     this.baselineVal,
     this.limitVal,
-    this.gaugeDecoration,
     this.gaugeType = GaugeType.defaultGauge
   }) : super(
       key: key,
@@ -41,11 +42,16 @@ class GaugeWidget extends ImplicitlyAnimatedWidget {
 
 
 class GaugeWidgetState extends AnimatedWidgetBaseState<GaugeWidget> {
-  Tween _arrowAnimation;
+  Tween<num> _arrowAnimation = Tween(begin: 0.0, end: 1.0);
 
   @override
   void forEachTween(visitor) {
-    _arrowAnimation = visitor(_arrowAnimation, widget.curVal ?? _defaultInitValue, (val) => Tween(begin: val));
+    _arrowAnimation = visitor(
+        _arrowAnimation,
+        widget.curVal,
+        (val) => Tween<num>(begin: val)
+    ) as Tween<num>;
+
     assert(_arrowAnimation != null);
   }
 
@@ -53,8 +59,8 @@ class GaugeWidgetState extends AnimatedWidgetBaseState<GaugeWidget> {
     return TickPainter(
         tickCount: widget.gaugeDecoration.ticksCount,
         ticksPerSection: widget.gaugeDecoration.ticksPerSection,
-        minVal: widget.minVal,
-        maxVal: widget.maxVal,
+        minVal: widget.minVal.toDouble(),
+        maxVal: widget.maxVal.toDouble(),
         tickColor: widget.gaugeDecoration.tickColor,
         tickWidth: widget.gaugeDecoration.tickWidth,
         textStyle: widget.gaugeDecoration.textStyle
@@ -99,17 +105,16 @@ class GaugeWidgetState extends AnimatedWidgetBaseState<GaugeWidget> {
 
     // what color we should use
     // define according to appropriate sector for _curVal
-    GaugeRangeDecoration curDecoration = widget.gaugeDecoration.rangesDecoration
-        .firstWhere((GaugeRangeDecoration dec) => dec.minVal < curVal && dec.maxVal >= curVal,
-        orElse: () => null);
+    GaugeRangeDecoration? curDecoration = widget.gaugeDecoration.rangesDecoration
+        .firstWhereOrNull((GaugeRangeDecoration dec) => dec.minVal < curVal && dec.maxVal >= curVal);
 
     if (curDecoration != null) {
       Color curColor = curDecoration.color;
 
       // need to normalize cur if it is out of the boundaries
       double normalizedCur;
-      if (curVal < widget.minVal) normalizedCur = widget.minVal;
-      else if (curVal > widget.maxVal) normalizedCur = widget.maxVal;
+      if (curVal < widget.minVal) normalizedCur = widget.minVal.toDouble();
+      else if (curVal > widget.maxVal) normalizedCur = widget.maxVal.toDouble();
       else normalizedCur = curVal;
 
       GaugeRangeDecoration beforeCurVal = GaugeRangeDecoration(minVal: widget.minVal, maxVal: normalizedCur, color: curColor);
@@ -141,12 +146,14 @@ class GaugeWidgetState extends AnimatedWidgetBaseState<GaugeWidget> {
   }
 
   Widget _buildArrow(){
+    final rotationPercent = _getRotationPercent(widget.minVal.toDouble(), widget.maxVal.toDouble(), _arrowAnimation.evaluate(animation) as double);
+
     return Container(
       height: double.infinity,
       width: double.infinity,
       child: CustomPaint(
         painter: ArrowPainter(
-            rotationPercent: _getRotationPercent(widget.minVal, widget.maxVal, _arrowAnimation.evaluate(animation) as double),
+            rotationPercent: rotationPercent,
             arrowColor: widget.gaugeDecoration.arrowColor,
             arrowPaintingStyle: widget.gaugeDecoration.arrowPaintingStyle,
             arrowEndShift: widget.gaugeDecoration.arrowEndShift,
@@ -157,7 +164,10 @@ class GaugeWidgetState extends AnimatedWidgetBaseState<GaugeWidget> {
   }
 
   Widget _buildBaseline(){
-    if (widget.baselineVal == null) return Container(height: 0.0, width: 0.0,);
+    final baselineVal = widget.baselineVal;
+
+    if (baselineVal == null) return const SizedBox();
+
     else {
       return RepaintBoundary(
         child: Container(
@@ -168,7 +178,7 @@ class GaugeWidgetState extends AnimatedWidgetBaseState<GaugeWidget> {
             painter: BaselinePainter(
                 min: widget.minVal,
                 max: widget.maxVal,
-                baselineVal: widget.baselineVal,
+                baselineVal: baselineVal,
                 color: widget.gaugeDecoration.baselineColor,
                 lineWidth: widget.gaugeDecoration.baselineWidth,
                 paintingStyle: widget.gaugeDecoration.baselinePaintingStyle
@@ -180,7 +190,10 @@ class GaugeWidgetState extends AnimatedWidgetBaseState<GaugeWidget> {
   }
 
   Widget _buildLimitArrow(){
-    if (widget.limitVal == null) return Container(height: 0.0, width: 0.0,);
+    final limitVal = widget.limitVal;
+
+    if (limitVal == null) return const SizedBox();
+
     else {
       return RepaintBoundary(
         child: Container(
@@ -191,7 +204,7 @@ class GaugeWidgetState extends AnimatedWidgetBaseState<GaugeWidget> {
             painter: LimitArrowPainter(
                 minVal: widget.minVal,
                 maxVal: widget.maxVal,
-                limitVal: widget.limitVal,
+                limitVal: limitVal,
                 color: widget.gaugeDecoration.limitArrowColor,
                 paintingStyle: widget.gaugeDecoration.limitArrowPaintingStyle,
                 arrowHeight: widget.gaugeDecoration.limitArrowHeight,

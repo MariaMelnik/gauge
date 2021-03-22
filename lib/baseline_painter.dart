@@ -11,12 +11,12 @@ class BaselinePainter extends CustomPainter{
   final double lineWidth;
 
   BaselinePainter({
-    @required this.baselineVal,
-    @required this.max,
-    @required this.min,
-    @required this.color,
-    @required this.paintingStyle,
-    @required this.lineWidth
+    required this.baselineVal,
+    required this.max,
+    required this.min,
+    required this.color,
+    required this.paintingStyle,
+    required this.lineWidth
   }) : painter = Paint(),
         assert (max != null && min != null && baselineVal != null),
         assert (max >= min),

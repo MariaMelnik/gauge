@@ -18,13 +18,13 @@ class TickPainter extends CustomPainter {
 
 
   TickPainter({
-    @required this.minVal,
-    @required this.maxVal,
-    @required this.textStyle,
-    @required this.tickCount,
-    @required this.ticksPerSection,
-    @required this.tickColor,
-    @required this.tickWidth
+    required this.minVal,
+    required this.maxVal,
+    required this.textStyle,
+    required this.tickCount,
+    required this.ticksPerSection,
+    required this.tickColor,
+    required this.tickWidth
   }) : tickPaint = Paint(),
         textPainter = TextPainter(
           textAlign: TextAlign.center,
@@ -72,7 +72,8 @@ class TickPainter extends CustomPainter {
     final double radius = size.width / 2;
     final double interval = (maxVal - minVal)/(tickCount-1);
     final TextStyle style = _getStyle(size.width);
-    final double textOffset = style.fontSize * 2;
+    final fontSize = style.fontSize ?? 12.0;
+    final double textOffset = fontSize * 2;
 
     canvas.translate(size.width / 2, size.height);
 
@@ -126,5 +127,4 @@ class TickPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) {
     return true;
   }
-
 }
